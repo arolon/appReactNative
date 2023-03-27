@@ -1,22 +1,28 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, StyleSheet, ImageBackground } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import IngredientTable from "./IngredientTable";
-import { speak, stop } from 'expo-speech';
+import { speak, stop } from "expo-speech";
 
 import crepesData from "./CrepesData";
 
-const readIngredients = (crepe) => {
-  console.log("Reading");
-  // Tts.speak(`${crepe.crepeName}. Ingredients: ${Object.keys(crepe.crepeIngredients).join(', ')}`);
-  
-  // const ingredients = Object.keys(crepe.crepeIngredients).join(', ');
-  // const textToSpeak = ${crepe.crepeName}. Ingredients: ${ingredients};
-  stop();
-  speak(`${crepe.crepeName}. Ingredients: ${Object.keys(crepe.crepeIngredients).join(', ')}`);
-}
-
 const CrepesList = () => {
+  const readIngredients = (crepe) => {
+    stop();
+    speak(
+      `${crepe.crepeName}. Ingredients: ${Object.keys(
+        crepe.crepeIngredients
+      ).join(", ")}`
+    );
+  };
+
+  const [showIngredients, setShowIngredients] = useState({});
+
+  const toggleIngredients = (index) => {
+    setShowIngredients({
+      [index]: !showIngredients[index],
+    });
+  };
   return (
     <ImageBackground
       source={require("../assets/background.jpg")}
@@ -28,20 +34,27 @@ const CrepesList = () => {
       >
         <View style={styles.container}>
           {crepesData.map((crepe, index) => (
-            <View style={styles.menuItem} key={index} onPress={() => readIngredients(crepe)}>
-              <Text style={styles.title} onPress={() => readIngredients(crepe)}>{crepe.crepeName}</Text>
-              <View style={styles.ingredientsContainer}>
-                {Object.entries(crepe.crepeIngredients).map(
-                  ([name, description]) => (
-                    <View style={styles.ingredientRow} key={name}>
-                      <Text style={styles.ingredientName}>{name}</Text>
-                      <Text style={styles.ingredientDescription}>
-                        {description}
-                      </Text>
-                    </View>
-                  )
-                )}
-              </View>
+            <View style={styles.menuItem} key={index}>
+              <Text
+                style={styles.title}
+                onPress={() => {toggleIngredients(index); readIngredients(crepe);}}
+              >
+                {crepe.crepeName}
+              </Text>
+              {showIngredients[index] && (
+                <View style={styles.ingredientsContainer}>
+                  {Object.entries(crepe.crepeIngredients).map(
+                    ([name, description]) => (
+                      <View style={styles.ingredientRow} key={name}>
+                        <Text style={styles.ingredientName}>{name}</Text>
+                        <Text style={styles.ingredientDescription}>
+                          {description}
+                        </Text>
+                      </View>
+                    )
+                  )}
+                </View>
+              )}
             </View>
           ))}
         </View>
@@ -54,6 +67,7 @@ const styles = StyleSheet.create({
   backgroundImage: {
     flex: 1,
     resizeMode: "cover",
+    display: "contents"
   },
   linearGradient: {
     flex: 1,
@@ -88,27 +102,27 @@ const styles = StyleSheet.create({
   },
   ingredientsContainer: {
     flex: 1,
-    flexDirection: 'column',
+    flexDirection: "column",
   },
   ingredientRow: {
     flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginVertical: 5,
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 5,
-    backgroundColor: '#fff',
-    shadowColor: '#000',
+    backgroundColor: "#fff",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.5,
     shadowRadius: 1,
     elevation: 1,
-    flexFlow: 'row-reverse'
+    flexFlow: "row-reverse",
   },
   ingredientName: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginRight: 10,
   },
   ingredientDescription: {
