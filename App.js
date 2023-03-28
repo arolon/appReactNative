@@ -6,6 +6,7 @@ import CrepesList from './components/CrepesList';
 export default function App() {
   return (
     <View style={styles.container}>
+      
       <CrepesList />
       <StatusBar style="auto" />
     </View>

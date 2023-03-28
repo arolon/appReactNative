@@ -1,18 +1,24 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, ImageBackground } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import IngredientTable from "./IngredientTable";
-import { speak, stop } from "expo-speech";
+import * as Speech from 'expo-speech';
+
+import SpeechSettings from './SpeechSettings';
 
 import crepesData from "./CrepesData";
 
 const CrepesList = () => {
   const readIngredients = (crepe) => {
-    stop();
-    speak(
-      `${crepe.crepeName}. Ingredients: ${Object.keys(
+    Speech.stop();
+    let options = {
+      'pitch': 2,
+      'rate' : 2,
+      'voice': 'Microsoft Zira - English (United States)'
+    }
+    Speech.speak(
+      `${crepe.crepeName}. ${Object.keys(
         crepe.crepeIngredients
-      ).join(", ")}`
+      ).join(", ")}`, options
     );
   };
 
@@ -23,11 +29,24 @@ const CrepesList = () => {
       [index]: !showIngredients[index],
     });
   };
+
+  let _loadAllVoices = async () => {
+    const availableVoices = await Speech.getAvailableVoicesAsync();
+    console.log({
+      voiceList: availableVoices,
+      voice: availableVoices[0].identifier,
+    });
+  }
+
+  _loadAllVoices();
+
+
   return (
     <ImageBackground
       source={require("../assets/background.jpg")}
       style={styles.backgroundImage}
     >
+      <SpeechSettings/>
       <LinearGradient
         colors={["rgba(255, 255, 255, 0.3)", "rgba(255, 255, 255, 0.9)"]}
         style={styles.linearGradient}
@@ -107,8 +126,9 @@ const styles = StyleSheet.create({
   ingredientRow: {
     flex: 1,
     flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexWrap: 'wrap',
+    justifyContent: "space-evenly",
+    alignItems: "stretch",
     marginVertical: 5,
     paddingHorizontal: 10,
     paddingVertical: 5,
@@ -119,7 +139,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 1,
     elevation: 1,
-    flexFlow: "row-reverse",
+    minHeight: 'unset',
+    textAlign: 'right'
   },
   ingredientName: {
     fontWeight: "bold",
